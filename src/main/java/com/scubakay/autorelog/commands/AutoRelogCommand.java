@@ -86,6 +86,11 @@ public class AutoRelogCommand {
                 .executes(ctx -> afkDelay(ctx, IntegerArgumentType.getInteger(ctx, "afkDelay")))
                 .build();
 
+        LiteralCommandNode<FabricClientCommandSource> loggingNode = ClientCommandManager
+                .literal("logging")
+                .executes(AutoRelogCommand::logging)
+                .build();
+
         dispatcher.getRoot().addChild(autoRelogNode);
 
         // Add config node
@@ -174,7 +179,7 @@ public class AutoRelogCommand {
     }
 
     private static int manualMode(CommandContext<FabricClientCommandSource> context) {
-        if(AutoRelogClient.CONFIG.isAfkDetection()) Reconnect.getInstance().deactivate();
+        if (AutoRelogClient.CONFIG.isAfkDetection()) Reconnect.getInstance().deactivate();
         AutoRelogClient.CONFIG.setAfkDetection(false);
         context.getSource().getPlayer().sendMessage(Text.translatable("commands.mode.manual"), false);
         return 1;
@@ -183,6 +188,12 @@ public class AutoRelogCommand {
     private static int afkDetectionMode(CommandContext<FabricClientCommandSource> context) {
         AutoRelogClient.CONFIG.setAfkDetection(true);
         context.getSource().getPlayer().sendMessage(Text.translatable("commands.mode.afkDetection"), false);
+        return 1;
+    }
+
+    private static int logging(CommandContext<FabricClientCommandSource> context) {
+        AutoRelogClient.CONFIG.setLogging(!AutoRelogClient.CONFIG.isLogging());
+        context.getSource().getPlayer().sendMessage(Text.translatable("commands.logging.toggled", AutoRelogClient.CONFIG.isLogging() ? "Enabled" : "Disabled"), false);
         return 1;
     }
 }
